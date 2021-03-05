@@ -5,6 +5,6 @@
  * -Holds array/list of tiles
  * -Make board image by compositing tiles
  */
-public class CarcassoneMap {
+public class CarcassonneMap {
 
 }
