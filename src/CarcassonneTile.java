@@ -79,13 +79,16 @@ import java.util.Arrays;
  */
 enum Rotation {
 	D0(0),
-	D90(1),
+	D90(3),
 	D180(2),
-	D270(3);
+	D270(1);
 
 	private final int id;
 	Rotation(int id) {
 		this.id = id;
+	}
+	int iden() {
+		return this.id;
 	}
 }
 
@@ -95,6 +98,9 @@ enum Orient {
 	private final int id;
 	Orient(int id) {
 		this.id = id;
+	}
+	int iden() {
+		return this.id;
 	}
 	Orient fromId(int i) {
 		for(Orient o: Orient.values())
@@ -108,9 +114,9 @@ enum Orient {
 	/*
 		Visualization
            F  C  F            F  F  C
-		 C    N    F        F    E    F
-		 F  E   W  F -D90-> R  S   N  C
-		 F    S    C        F    W    F
+		 C    N    F        F    W    F
+		 F  W   E  F -D90-> R  S   N  C
+		 F    S    C        F    E    F
 		   F  R  F            C  F  F
 
 		N -> E
@@ -119,7 +125,7 @@ enum Orient {
 
            F  C  F             F  R  F
 		 C    N    F         C    S    F
-		 F  E   W  F -D180-> F  W   E  F
+		 F  W   E  F -D180-> F  E   W  F
 		 F    S    C         F    N    C
 		   F  R  F             F  C  F
 
@@ -128,9 +134,9 @@ enum Orient {
 		...
 
            F  C  F             F  F  C
-		 C    N    F         F    W    F
-		 F  E   W  F -D270-> C  N   S  R
-		 F    S    C         F    E    F
+		 C    N    F         F    E    F
+		 F  W   E  F -D270-> C  N   S  R
+		 F    S    C         F    W    F
 		   F  R  F             C  F  F
 
 		N -> W
@@ -138,7 +144,7 @@ enum Orient {
 		...
 	 */
 	Orient rotate(Rotation r) {
-		return this.fromId((this.id - r.ordinal() + 4) % 4);
+		return this.fromId((this.id - r.iden() + 4) % 4);
 	}
 };
 
@@ -158,6 +164,14 @@ class Side {
 
 	public TerrainType[] getSide() {
 		return this.sidetypes;
+	}
+
+	public Side getReversedSide() {
+		return new Side(
+			this.sidetypes[2],
+			this.sidetypes[1],
+			this.sidetypes[0]
+		);
 	}
 
 	public boolean equals(Object obj) {
@@ -185,15 +199,15 @@ public class CarcassonneTile {
 
 	public Side[] getRotatedSides() {
 		return new Side[] {
-				this.sides[Orient.N.rotate(this.rotation).ordinal()],
-				this.sides[Orient.W.rotate(this.rotation).ordinal()],
-				this.sides[Orient.S.rotate(this.rotation).ordinal()],
-				this.sides[Orient.E.rotate(this.rotation).ordinal()],
+				this.sides[Orient.N.rotate(this.rotation).iden()],
+				this.sides[Orient.W.rotate(this.rotation).iden()],
+				this.sides[Orient.S.rotate(this.rotation).iden()],
+				this.sides[Orient.E.rotate(this.rotation).iden()],
 		};
 	}
 	
-	public boolean fit(CarcassonneTile t, Orient o, Rotation r) {
-		return this.sides[o.ordinal()].equals(t.getSides()[o.rotate(r).opposite().ordinal()]);
+	public boolean fit(CarcassonneTile t, Orient o) {
+		return this.sides[o.iden()].equals(t.getRotatedSides()[o.opposite().iden()].getReversedSide());
 	}
 
 	public String toString() {
@@ -219,7 +233,7 @@ public class CarcassonneTile {
 		});
 		
 		CarcassonneTile t2 = new CarcassonneTile(new Side[] {
-				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.City), //N
+				new Side(TerrainType.City, TerrainType.Farm, TerrainType.Farm), //N
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //W
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //S
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm)  //E
@@ -231,12 +245,17 @@ public class CarcassonneTile {
 		 F    S    C  C    S    F
 		   F  F  F      F  F  F
 		 */
-		System.out.println("match D0  ? :" + t1.fit(t2, Orient.W, Rotation.D0));
-		System.out.println("match D90 ? :" + t1.fit(t2, Orient.W, Rotation.D90));
-		System.out.println("match D180? :" + t1.fit(t2, Orient.W, Rotation.D180));
-		System.out.println("match D270? :" + t1.fit(t2, Orient.W, Rotation.D270));
+		System.out.println("match D0  ? :" + t1.fit(t2, Orient.W));
+		t2.rotate(Rotation.D90);
+		System.out.println("match D90 ? :" + t1.fit(t2, Orient.W));
+		t2.rotate(Rotation.D180);
+		System.out.println("match D180? :" + t1.fit(t2, Orient.W));
+		t2.rotate(Rotation.D270);
+		System.out.println("match D270? :" + t1.fit(t2, Orient.W));
+
 		System.out.println(t1);
 		t2.rotate(Rotation.D90);
 		System.out.println(t2);
+
 	}
 }
