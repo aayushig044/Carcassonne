@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 /*
@@ -113,7 +114,7 @@ enum Orient {
 	}
 	/*
 		Visualization
-           F  C  F            F  F  C
+		  F  C  F            F  F  C
 		 C    N    F        F    W    F
 		 F  W   E  F -D90-> R  S   N  C
 		 F    S    C        F    E    F
@@ -123,7 +124,7 @@ enum Orient {
 		W -> N
 		...
 
-           F  C  F             F  R  F
+		  F  C  F             F  R  F
 		 C    N    F         C    S    F
 		 F  W   E  F -D180-> F  E   W  F
 		 F    S    C         F    N    C
@@ -133,7 +134,7 @@ enum Orient {
 		W -> E
 		...
 
-           F  C  F             F  F  C
+		  F  C  F             F  F  C
 		 C    N    F         F    E    F
 		 F  W   E  F -D270-> C  N   S  R
 		 F    S    C         F    W    F
@@ -180,6 +181,7 @@ class Side {
 }
 
 public class CarcassonneTile {
+	BufferedImage image;
 	Rotation rotation;
 	Side[] sides;
 
@@ -224,26 +226,37 @@ public class CarcassonneTile {
 				rotated[2].getSide()[0], rotated[2].getSide()[1], rotated[2].getSide()[2]);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { // TEST
 		CarcassonneTile t1 = new CarcassonneTile(new Side[] {
-				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //N
-				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.City), //W
-				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //S
-				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm)  //E
+				new Side(TerrainType.City, TerrainType.City, TerrainType.City), //N
+				new Side(TerrainType.City, TerrainType.City, TerrainType.City), //W
+				new Side(TerrainType.Farm, TerrainType.Road, TerrainType.Farm), //S
+				new Side(TerrainType.Farm, TerrainType.Road, TerrainType.Farm)  //E
 		});
 		
 		CarcassonneTile t2 = new CarcassonneTile(new Side[] {
-				new Side(TerrainType.City, TerrainType.Farm, TerrainType.Farm), //N
+				new Side(TerrainType.City, TerrainType.City, TerrainType.City), //N
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //W
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //S
 				new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm)  //E
 		});
 		/*
-		   F  F  F      F  F  F
-		 F    N    F  F    N    F
-		 F  E   W  F  F  E   W  F
-		 F    S    C  C    S    F
-		   F  F  F      F  F  F
+		// T1
+			  City    City    City
+		City                          Farm
+		City                          Road
+		City                          Farm
+			  Farm    Road    Farm
+
+		// T2
+			  City    City    City
+		Farm                          Farm
+		Farm                          Farm
+		Farm                          Farm
+			  Farm    Farm    Farm
+
+		// Test fitting each rotation, connecting from West of T1
+		// 90 Degrees should only work.
 		 */
 		System.out.println("match D0  ? :" + t1.fit(t2, Orient.W));
 		t2.rotate(Rotation.D90);
@@ -253,8 +266,9 @@ public class CarcassonneTile {
 		t2.rotate(Rotation.D270);
 		System.out.println("match D270? :" + t1.fit(t2, Orient.W));
 
+		// Testing pretty printing edges
 		System.out.println(t1);
-		t2.rotate(Rotation.D90);
+		t2.rotate(Rotation.D180);
 		System.out.println(t2);
 
 	}
