@@ -21,7 +21,7 @@ public class CarcassonneMap {
     public CarcassonneMap() {
         this.map = new CarcassonneTile[85][85];
         // TODO change this, this mess below is simple start tile for test purposes.
-        this.map[85][85] = new CarcassonneTile(new Side[] {
+        this.map[43][43] = new CarcassonneTile(new Side[] {
                 new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //N
                 new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //W
                 new Side(TerrainType.Farm, TerrainType.Farm, TerrainType.Farm), //S
